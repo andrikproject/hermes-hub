@@ -1,11 +1,13 @@
 package com.hermeshub.ui.navigation
 
-sealed class Screen(val route: String) {
-    object ConnectionList : Screen("connection_list")
-    object AddConnection : Screen("add_connection")
-    object Chat : Screen("chat/{connectionId}/{connectionName}") {
-        fun createRoute(connectionId: Long, connectionName: String): String {
-            return "chat/$connectionId/$connectionName"
-        }
-    }
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.ui.graphics.vector.ImageVector
+
+sealed class BottomNavItem(val route: String, val title: String, val icon: ImageVector) {
+    object Home : BottomNavItem("home", "Home", Icons.Default.Home)
+    object AddConnection : BottomNavItem("add_connection", "Tambah", Icons.Default.Add)
+    object Profile : BottomNavItem("profile", "Profile", Icons.Default.Person)
 }
