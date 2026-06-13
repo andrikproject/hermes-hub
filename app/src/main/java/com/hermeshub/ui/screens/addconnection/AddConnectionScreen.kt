@@ -35,16 +35,6 @@ fun AddConnectionScreen(
     val state by viewModel.addConnectionState.collectAsState()
     var showKey by remember { mutableStateOf(false) }
 
-    fun textColors() = OutlinedTextFieldDefaults.colors(
-        focusedBorderColor = HermesOrange,
-        unfocusedBorderColor = DarkBorder,
-        focusedTextColor = TextPrimary,
-        unfocusedTextColor = TextPrimary,
-        cursorColor = HermesOrange,
-        focusedContainerColor = DarkSurface,
-        unfocusedContainerColor = DarkSurface
-    )
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -88,7 +78,15 @@ fun AddConnectionScreen(
                 placeholder = { Text("Contoh: Hermes VPS", color = TextMuted) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = textColors(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = HermesOrange,
+                    unfocusedBorderColor = DarkBorder,
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    cursorColor = HermesOrange,
+                    focusedContainerColor = DarkSurface,
+                    unfocusedContainerColor = DarkSurface
+                ),
                 singleLine = true
             )
 
@@ -101,7 +99,15 @@ fun AddConnectionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri, imeAction = ImeAction.Next),
-                colors = textColors(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = HermesOrange,
+                    unfocusedBorderColor = DarkBorder,
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    cursorColor = HermesOrange,
+                    focusedContainerColor = DarkSurface,
+                    unfocusedContainerColor = DarkSurface
+                ),
                 singleLine = true
             )
 
@@ -113,7 +119,15 @@ fun AddConnectionScreen(
                 placeholder = { Text("API Key Hermes", color = TextMuted) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = textColors(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = HermesOrange,
+                    unfocusedBorderColor = DarkBorder,
+                    focusedTextColor = TextPrimary,
+                    unfocusedTextColor = TextPrimary,
+                    cursorColor = HermesOrange,
+                    focusedContainerColor = DarkSurface,
+                    unfocusedContainerColor = DarkSurface
+                ),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { viewModel.testConnection() }),
