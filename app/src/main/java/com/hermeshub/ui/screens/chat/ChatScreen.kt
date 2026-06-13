@@ -129,7 +129,7 @@ fun ChatScreen(
                     .padding(paddingValues)
                     .padding(horizontal = 12.dp),
                 state = listState,
-                contentPadding = PaddingValues(vertical = 8.dp, bottom = 8.dp),
+                contentPadding = PaddingValues(top = 8.dp, bottom = 8.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 items(chatState.messages, key = { it.id }) { msg ->
@@ -316,7 +316,7 @@ fun ChatInputBar(
                     unfocusedContainerColor = DarkSurfaceVariant
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(onSend = onSend),
+                keyboardActions = KeyboardActions(onSend = { onSend() }),
                 maxLines = 4,
                 textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
                 enabled = !isLoading

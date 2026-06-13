@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = DarkBackground
                 ) {
-                    HermesHubApp()
+                    HermesHubMain()
                 }
             }
         }
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun HermesHubApp() {
+fun HermesHubMain() {
     val navController = rememberNavController()
     val viewModel: HermesViewModel = viewModel()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
