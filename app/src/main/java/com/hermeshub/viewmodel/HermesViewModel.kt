@@ -1,6 +1,7 @@
 package com.hermeshub.viewmodel
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.hermeshub.data.local.HermesDatabase
@@ -39,6 +40,11 @@ class HermesViewModel(application: Application) : AndroidViewModel(application) 
         connectionDao = db.connectionDao(),
         messageDao = db.messageDao()
     )
+
+    // Theme state
+    private val prefs = application.getSharedPreferences("hermes_hub_prefs", Context.MODE_PRIVATE)
+    private val _isDarkMode = MutableStateFlow(prefs.getBoolean("dark_mode", true))
+    val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
 
     // Connection state
     private val _connectionState = MutableStateFlow(ConnectionUiState())
@@ -258,5 +264,13 @@ class HermesViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch {
             repository.clearMessages(connection.id)
         }
+    }
+
+    // ========== THEME ==========
+
+    fun toggleTheme() {
+        val newValue = !_isDarkMode.value
+        _isDarkMode.value = newValue
+        prefs.edit().putBoolean("dark_mode", newValue).apply()
     }
 }

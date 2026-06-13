@@ -135,7 +135,7 @@ fun HermesHubMain() {
 
             // === PROFILE ===
             composable(BottomNavItem.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(viewModel = viewModel)
             }
         }
     }

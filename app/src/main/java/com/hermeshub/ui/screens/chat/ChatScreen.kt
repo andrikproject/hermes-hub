@@ -288,63 +288,121 @@ fun ChatInputBar(
     isLoading: Boolean,
     onSend: () -> Unit
 ) {
+    var showAttachMenu by remember { mutableStateOf(false) }
+
     Surface(
         modifier = Modifier.fillMaxWidth(),
         color = DarkBackground,
         shadowElevation = 8.dp
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 8.dp)
-                .navigationBarsPadding(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            OutlinedTextField(
-                value = inputText,
-                onValueChange = onInputChange,
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Ketik pesan...", color = TextMuted, fontSize = 14.sp) },
-                shape = RoundedCornerShape(24.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = HermesOrange,
-                    unfocusedBorderColor = DarkBorder,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    cursorColor = HermesOrange,
-                    focusedContainerColor = DarkSurfaceVariant,
-                    unfocusedContainerColor = DarkSurfaceVariant
-                ),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
-                keyboardActions = KeyboardActions(onSend = { onSend() }),
-                maxLines = 4,
-                textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
-                enabled = !isLoading
-            )
+        Column {
+            // Attached file preview (placeholder for future)
+            if (showAttachMenu) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    AssistChip(
+                        onClick = { /* TODO: file picker */ },
+                        label = { Text("📎 File", fontSize = 12.sp) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = DarkSurfaceVariant,
+                            labelColor = TextSecondary
+                        )
+                    )
+                    AssistChip(
+                        onClick = { /* TODO: voice input */ },
+                        label = { Text("🎤 Voice", fontSize = 12.sp) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = DarkSurfaceVariant,
+                            labelColor = TextSecondary
+                        )
+                    )
+                }
+            }
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            FilledIconButton(
-                onClick = onSend,
-                modifier = Modifier.size(48.dp),
-                shape = RoundedCornerShape(24.dp),
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = if (inputText.isNotBlank() && !isLoading) HermesOrange else DarkSurfaceVariant
-                ),
-                enabled = inputText.isNotBlank() && !isLoading
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
+                    .navigationBarsPadding(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(20.dp),
-                        color = TextPrimary,
-                        strokeWidth = 2.dp
-                    )
-                } else {
+                // Attach button
+                IconButton(
+                    onClick = { showAttachMenu = !showAttachMenu },
+                    modifier = Modifier.size(40.dp)
+                ) {
                     Icon(
-                        Icons.Default.Send,
-                        contentDescription = "Kirim",
-                        tint = if (inputText.isNotBlank()) Color.White else TextMuted
+                        Icons.Default.AttachFile,
+                        contentDescription = "Lampirkan",
+                        tint = if (showAttachMenu) HermesOrange else TextMuted,
+                        modifier = Modifier.size(22.dp)
                     )
+                }
+
+                OutlinedTextField(
+                    value = inputText,
+                    onValueChange = onInputChange,
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Ketik pesan...", color = TextMuted, fontSize = 14.sp) },
+                    shape = RoundedCornerShape(24.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = HermesOrange,
+                        unfocusedBorderColor = DarkBorder,
+                        focusedTextColor = TextPrimary,
+                        unfocusedTextColor = TextPrimary,
+                        cursorColor = HermesOrange,
+                        focusedContainerColor = DarkSurfaceVariant,
+                        unfocusedContainerColor = DarkSurfaceVariant
+                    ),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
+                    keyboardActions = KeyboardActions(onSend = { onSend() }),
+                    maxLines = 4,
+                    textStyle = LocalTextStyle.current.copy(fontSize = 14.sp),
+                    enabled = !isLoading,
+                    trailingIcon = {
+                        // Mic button inside the text field
+                        IconButton(
+                            onClick = { /* TODO: start voice input */ },
+                            modifier = Modifier.size(32.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.Mic,
+                                contentDescription = "Voice",
+                                tint = if (inputText.isBlank()) TextMuted else HermesOrange,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                FilledIconButton(
+                    onClick = onSend,
+                    modifier = Modifier.size(48.dp),
+                    shape = RoundedCornerShape(24.dp),
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = if (inputText.isNotBlank() && !isLoading) HermesOrange else DarkSurfaceVariant
+                    ),
+                    enabled = inputText.isNotBlank() && !isLoading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            color = TextPrimary,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Icon(
+                            Icons.Default.Send,
+                            contentDescription = "Kirim",
+                            tint = if (inputText.isNotBlank()) Color.White else TextMuted
+                        )
+                    }
                 }
             }
         }

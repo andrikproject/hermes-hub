@@ -17,12 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.hermeshub.data.model.HermesConnection
 import com.hermeshub.ui.theme.*
 import com.hermeshub.viewmodel.HermesViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun ConnectionListScreen(
@@ -94,20 +97,64 @@ fun ConnectionListScreen(
 
 @Composable
 fun HeaderSection() {
+    // Live clock - updates every second
+    var currentTime by remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(1000)
+            currentTime = System.currentTimeMillis()
+        }
+    }
+
+    val dateFormat = SimpleDateFormat("EEEE, dd MMMM yyyy", Locale("id", "ID"))
+    val timeFormat = SimpleDateFormat("HH:mm:ss", Locale("id", "ID"))
+
     Column {
+        // Greeting
         Text(
-            "Hermes Hub",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            "Halo! 👋",
+            fontSize = 14.sp,
+            color = HermesOrange,
+            fontWeight = FontWeight.Medium
         )
+        Spacer(modifier = Modifier.height(2.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                "Hermes Hub",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = TextPrimary
+            )
+
+            // Live Time
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = HermesOrange.copy(alpha = 0.12f)
+                )
+            ) {
+                Text(
+                    timeFormat.format(Date(currentTime)),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = HermesOrange
+                )
+            }
+        }
+
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            "Akses Hermes Agent dari mana aja",
-            fontSize = 14.sp,
+            dateFormat.format(Date(currentTime)),
+            fontSize = 13.sp,
             color = TextSecondary
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
     }
 }
 
