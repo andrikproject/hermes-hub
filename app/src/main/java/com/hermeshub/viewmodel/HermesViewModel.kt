@@ -9,6 +9,7 @@ import com.hermeshub.data.model.ChatMessage
 import com.hermeshub.data.model.HermesConnection
 import com.hermeshub.data.model.Message
 import com.hermeshub.data.repository.HermesRepository
+import com.hermeshub.util.NotificationHelper
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -238,6 +239,12 @@ class HermesViewModel(application: Application) : AndroidViewModel(application) 
                             isStreaming = false,
                             streamedContent = ""
                         )
+                        // Notifikasi
+                        NotificationHelper.showResponseNotification(
+                            getApplication(),
+                            connection.name,
+                            fullContent
+                        )
                     }
                 },
                 onError = { error ->
@@ -252,6 +259,11 @@ class HermesViewModel(application: Application) : AndroidViewModel(application) 
                             isLoading = false,
                             isStreaming = false,
                             streamedContent = ""
+                        )
+                        NotificationHelper.showErrorNotification(
+                            getApplication(),
+                            connection.name,
+                            error.message ?: "Unknown error"
                         )
                     }
                 }
