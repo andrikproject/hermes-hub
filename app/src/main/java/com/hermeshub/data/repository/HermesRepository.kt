@@ -13,6 +13,10 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 import okhttp3.Response
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
@@ -44,12 +48,22 @@ class HermesRepository(
     suspend fun checkConnection(baseUrl: String, apiKey: String): Result<Boolean> =
         withContext(Dispatchers.IO) {
             try {
-                val service = HermesApiService.create(baseUrl, apiKey)
-                val response = service.getModels()
-                if (response.isSuccessful) {
+                val url = URL("${baseUrl.trimEnd('/')}/v1/models")
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "GET"
+                conn.setRequestProperty("Authorization", "Bearer $apiKey")
+                conn.setRequestProperty("Content-Type", "application/json")
+                conn.connectTimeout = 10000
+                conn.readTimeout = 10000
+                conn.connect()
+
+                val code = conn.responseCode
+                conn.disconnect()
+
+                if (code in 200..299) {
                     Result.success(true)
                 } else {
-                    Result.failure(Exception("Gagal: ${response.code()} ${response.message()}"))
+                    Result.failure(Exception("HTTP $code"))
                 }
             } catch (e: Exception) {
                 Result.failure(e)

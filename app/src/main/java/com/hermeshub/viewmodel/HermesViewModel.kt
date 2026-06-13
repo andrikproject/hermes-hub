@@ -10,6 +10,7 @@ import com.hermeshub.data.model.HermesConnection
 import com.hermeshub.data.model.Message
 import com.hermeshub.data.repository.HermesRepository
 import com.hermeshub.util.NotificationHelper
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -46,6 +47,15 @@ class HermesViewModel(application: Application) : AndroidViewModel(application) 
     private val prefs = application.getSharedPreferences("hermes_hub_prefs", Context.MODE_PRIVATE)
     private val _isDarkMode = MutableStateFlow(prefs.getBoolean("dark_mode", true))
     val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
+
+    // Global exception handler
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        _addConnectionState.value = _addConnectionState.value.copy(
+            isTesting = false,
+            isSaving = false,
+            testResult = "❌ Error: ${throwable.message?.take(80) ?: "Unknown"}"
+        )
+    }
 
     // Connection state
     private val _connectionState = MutableStateFlow(ConnectionUiState())
@@ -92,13 +102,20 @@ class HermesViewModel(application: Application) : AndroidViewModel(application) 
             return
         }
 
-        viewModelScope.launch {
-            _addConnectionState.value = _addConnectionState.value.copy(isTesting = true, testResult = null)
-            val result = repository.checkConnection(state.baseUrl, state.apiKey)
-            _addConnectionState.value = _addConnectionState.value.copy(
-                isTesting = false,
-                testResult = if (result.isSuccess) "✅ Koneksi berhasil!" else "❌ Gagal: ${result.exceptionOrNull()?.message}"
-            )
+        viewModelScope.launch(exceptionHandler) {
+            try {
+                _addConnectionState.value = _addConnectionState.value.copy(isTesting = true, testResult = null)
+                val result = repository.checkConnection(state.baseUrl, state.apiKey)
+                _addConnectionState.value = _addConnectionState.value.copy(
+                    isTesting = false,
+                    testResult = if (result.isSuccess) "✅ Koneksi berhasil!" else "❌ ${result.exceptionOrNull()?.message ?: "Gagal"}"
+                )
+            } catch (e: Exception) {
+                _addConnectionState.value = _addConnectionState.value.copy(
+                    isTesting = false,
+                    testResult = "❌ ${e.message?.take(60) ?: "Unknown error"}"
+                )
+            }
         }
     }
 
